@@ -1,12 +1,14 @@
 import express from "express";
 import bodyParser from "body-parser";
 import productRouter from "./src/features/product/product.routes.js";
+import userRouter from "./src/features/user/user.routes.js";
 
 const app = express();
 
 app.use(bodyParser.json());
 
 app.use("/api/products", productRouter);
+app.use("/api/users", userRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to node js server");

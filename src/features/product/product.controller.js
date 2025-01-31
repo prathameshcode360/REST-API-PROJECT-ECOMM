@@ -42,25 +42,32 @@ export default class ProductController {
     }
   }
   filterProducts(req, res) {
-    const minPrice = Number(req.query.minPrice);
-    const maxPrice = Number(req.query.maxPrice); // ✅ Corrected this line
-    const category = req.query.category;
+    try {
+      const minPrice = Number(req.query.minPrice);
+      const maxPrice = Number(req.query.maxPrice); // ✅ Corrected this line
+      const category = req.query.category;
 
-    console.log(minPrice);
-    console.log(maxPrice);
-    console.log(category);
+      console.log(minPrice);
+      console.log(maxPrice);
+      console.log(category);
 
-    let filteredProducts = ProductModel.filter(minPrice, maxPrice, category);
+      let filteredProducts = ProductModel.filter(minPrice, maxPrice, category);
 
-    console.log(filteredProducts);
+      console.log(filteredProducts);
 
-    if (!filteredProducts.length) {
-      // ✅ Checking array length
-      return res.status(404).send({ msg: "Product not found" });
-    } else {
-      return res
-        .status(200)
-        .send({ msg: "Filtered products", filteredProducts });
+      if (!filteredProducts.length) {
+        // ✅ Checking array length
+        return res.status(404).send({ msg: "Product not found" });
+      } else {
+        return res
+          .status(200)
+          .send({ msg: "Filtered products", filteredProducts });
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      return res.status(500).send({
+        msg: "Internal server error",
+      });
     }
   }
 }
