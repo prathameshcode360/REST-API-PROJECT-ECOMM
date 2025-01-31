@@ -1,0 +1,16 @@
+{
+  "name": "rest-api-project-ecomm",
+  "version": "1.0.0",
+  "description": "creating all ecommerce related API using REST-Node-Express-MongoDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "prathamesh mhatugade",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "express": "^4.21.2"
+  }
+}
