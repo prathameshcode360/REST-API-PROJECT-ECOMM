@@ -27,4 +27,40 @@ export default class ProductController {
       });
     }
   }
+  getOneProducts(req, res) {
+    try {
+      const id = req.params.id;
+      let product = ProductModel.getOne(id);
+      if (!product) {
+        return res.status(404).send({ msg: "Product not found" });
+      } else {
+        return res.status(200).send({ msg: "product", product });
+      }
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send({ msg: "Internal server error" });
+    }
+  }
+  filterProducts(req, res) {
+    const minPrice = Number(req.query.minPrice);
+    const maxPrice = Number(req.query.maxPrice); // ✅ Corrected this line
+    const category = req.query.category;
+
+    console.log(minPrice);
+    console.log(maxPrice);
+    console.log(category);
+
+    let filteredProducts = ProductModel.filter(minPrice, maxPrice, category);
+
+    console.log(filteredProducts);
+
+    if (!filteredProducts.length) {
+      // ✅ Checking array length
+      return res.status(404).send({ msg: "Product not found" });
+    } else {
+      return res
+        .status(200)
+        .send({ msg: "Filtered products", filteredProducts });
+    }
+  }
 }
