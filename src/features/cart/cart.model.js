@@ -40,5 +40,21 @@ export default class CartModel {
     cartItem.quantity = quantity; // ✅ Quantity update ho gayi
     return "Item updated successfully"; // ✅ Proper success response
   }
+  static delete(userId, cartId) {
+    if (!cartItems[userId]) {
+      return "Cart not found"; // ✅ User ka cart exist hi nahi karta
+    }
+
+    const cartItemIndex = cartItems[userId].findIndex(
+      (item) => item.cartId == cartId
+    );
+
+    if (cartItemIndex === -1) {
+      return "Item not found"; // ✅ Cart me item nahi mila
+    }
+
+    cartItems[userId].splice(cartItemIndex, 1); // ✅ Item remove kar diya
+    return "Item removed successfully"; // ✅ Success response
+  }
 }
 var cartItems = {};
