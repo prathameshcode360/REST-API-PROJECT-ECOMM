@@ -23,4 +23,10 @@ export default class UserModel {
     return users;
   }
 }
-let users = [new UserModel(1, "user", "user@gmail.com", "pass123")];
+let users = [
+  new UserModel(1, "user1", "user1@gmail.com", "pass123"),
+  new UserModel(2, "user2", "user2@gmail.com", "pass456"),
+  new UserModel(3, "user3", "user3@gmail.com", "pass789"),
+  new UserModel(4, "user4", "user4@gmail.com", "pass101"),
+  new UserModel(5, "user5", "user5@gmail.com", "pass202"),
+];
