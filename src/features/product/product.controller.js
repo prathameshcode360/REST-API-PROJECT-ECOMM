@@ -70,4 +70,17 @@ export default class ProductController {
       });
     }
   }
+  rateProduct(req, res) {
+    try {
+      const { userId, productId, rating } = req.body;
+      const result = ProductModel.rate(userId, productId, rating);
+
+      if (result) {
+        return res.send(result);
+      }
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send({ msg: "Internal server error" });
+    }
+  }
 }
