@@ -6,5 +6,6 @@ const cartController = new CartController();
 
 cartRouter.post("/add", cartController.addToCart);
 cartRouter.get("/get", cartController.getCartItems);
+cartRouter.post("/update", cartController.updateCartItem);
 
 export default cartRouter;

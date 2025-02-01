@@ -24,4 +24,17 @@ export default class CartController {
       return res.status(500).send("Internal server error");
     }
   }
+  updateCartItem(req, res) {
+    try {
+      const userId = req.userId;
+      const { cartId, quantity } = req.body;
+      const result = CartModel.update(userId, cartId, quantity);
+      if (result) {
+        return res.send(result);
+      }
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send({ msg: "Internal server error" });
+    }
+  }
 }

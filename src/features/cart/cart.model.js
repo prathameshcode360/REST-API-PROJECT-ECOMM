@@ -26,5 +26,19 @@ export default class CartModel {
       return "No cart items";
     }
   }
+  static update(userId, cartId, quantity) {
+    if (!cartItems[userId]) {
+      return "Cart not found"; // ✅ User ka cart exist hi nahi karta
+    }
+
+    const cartItem = cartItems[userId].find((item) => item.cartId == cartId);
+
+    if (!cartItem) {
+      return "Item not found"; // ✅ Cart me item nahi mila
+    }
+
+    cartItem.quantity = quantity; // ✅ Quantity update ho gayi
+    return "Item updated successfully"; // ✅ Proper success response
+  }
 }
 var cartItems = {};
