@@ -1,10 +1,13 @@
-import UserModel from "./user.model.js";
+import UserRepo from "./user.repo.js";
 import jwt from "jsonwebtoken";
 export default class UserController {
+  constructor() {
+    this.userRepo = new UserRepo();
+  }
   async signUp(req, res) {
     try {
       const { name, email, password } = req.body;
-      const newUser = await UserModel.register(name, email, password);
+      const newUser = await this.userRepo.register(name, email, password);
       return res
         .status(201)
         .send({ msg: "User added successfully", newUser: newUser });
@@ -13,10 +16,10 @@ export default class UserController {
       return res.status(500).send({ msg: "Internal server error" });
     }
   }
-  signIn(req, res) {
+  async signIn(req, res) {
     try {
       const { email, password } = req.body;
-      const user = UserModel.login(email, password);
+      const user = await this.userRepo.login(email, password);
       if (!user) {
         return res.status(400).send({
           msg: "invalid Credentials",
@@ -34,19 +37,19 @@ export default class UserController {
       return res.status(500).send({ msg: "Internal server error" });
     }
   }
-  getUsers(req, res) {
+  async getUsers(req, res) {
     try {
-      let users = UserModel.getAll();
+      let users = await this.userRepo.getAll();
       return res.status(200).send({ msg: "users", users: users });
     } catch (err) {
       console.log(err);
       return res.status(500).send({ msg: "internal server error" });
     }
   }
-  getOneUser(req, res) {
+  async getOneUser(req, res) {
     try {
-      const id = req.params.id;
-      let user = UserModel.getOne(id);
+      const _id = req.params._id;
+      let user = await this.userRepo.getOne(_id);
       if (!user) {
         return res.status(404).send({ msg: "User not found" });
       } else {
