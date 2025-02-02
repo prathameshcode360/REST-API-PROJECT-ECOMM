@@ -16,11 +16,11 @@ export default class UserRepo {
       console.error("Database error in register function:", err);
     }
   }
-  async login(email, password) {
+  async findByEmail(email) {
     try {
       const db = getDb();
       const collection = db.collection(this.collection);
-      const user = await collection.findOne({ email, password });
+      const user = await collection.findOne({ email });
       return user;
     } catch (err) {
       console.error("Database error in login function:", err);

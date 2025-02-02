@@ -1,5 +1,6 @@
 import UserRepo from "./user.repo.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 export default class UserController {
   constructor() {
     this.userRepo = new UserRepo();
@@ -7,7 +8,8 @@ export default class UserController {
   async signUp(req, res) {
     try {
       const { name, email, password } = req.body;
-      const newUser = await this.userRepo.register(name, email, password);
+      const hashPassword = await bcrypt.hash(password, 12);
+      const newUser = await this.userRepo.register(name, email, hashPassword);
       return res
         .status(201)
         .send({ msg: "User added successfully", newUser: newUser });
@@ -19,21 +21,29 @@ export default class UserController {
   async signIn(req, res) {
     try {
       const { email, password } = req.body;
-      const user = await this.userRepo.login(email, password);
+
+      // Fetch user from DB
+      const user = await this.userRepo.findByEmail(email);
       if (!user) {
-        return res.status(400).send({
-          msg: "invalid Credentials",
-        });
-      } else {
-        const token = jwt.sign(
-          { userId: user.id, email: user.email },
-          "RyHNTbfn8j7InkOJartrslNgkGdCxPWu",
-          { expiresIn: "1h" }
-        );
-        return res.status(200).send(token);
+        return res.status(404).send({ msg: "User not found" });
       }
+
+      // Compare passwords
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).send({ msg: "Invalid credentials" });
+      }
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: user._id, email: user.email },
+        "RyHNTbfn8j7InkOJartrslNgkGdCxPWu",
+        { expiresIn: "1h" }
+      );
+
+      return res.status(200).send(token);
     } catch (err) {
-      console.error(err);
+      console.error("Sign-in error:", err);
       return res.status(500).send({ msg: "Internal server error" });
     }
   }
