@@ -1,30 +1,11 @@
 import UserModel from "../user/user.model.js";
 export default class ProductModel {
-  constructor(id, name, price, image, category) {
-    this.id = id;
+  constructor(name, price, image, category, _id) {
     this.name = name;
     this.price = price;
     this.image = image;
     this.category = category;
-  }
-  static add(name, price, image, category) {
-    const newProduct = new ProductModel(
-      products.length + 1,
-      name,
-      price,
-      image,
-      category
-    );
-    products.push(newProduct);
-    return newProduct;
-  }
-  static getAll() {
-    return products;
-  }
-
-  static getOne(id) {
-    const product = products.find((p) => p.id == id);
-    return product;
+    this._id = _id;
   }
 
   static filter(minPrice, maxPrice, category) {

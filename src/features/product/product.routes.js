@@ -6,13 +6,15 @@ const productController = new ProductController();
 
 productRouter.get("/filter", productController.filterProducts);
 
-productRouter.get("/", productController.getProducts);
-productRouter.post(
-  "/add",
-  fileUpload.single("image"),
-  productController.addProduct
-);
-productRouter.get("/:id", productController.getOneProducts);
+productRouter.get("/", (req, res) => {
+  productController.getProducts(req, res);
+});
+productRouter.post("/add", fileUpload.single("image"), (req, res) => {
+  productController.addProduct(req, res);
+});
+productRouter.get("/:_id", (req, res) => {
+  productController.getOneProducts(req, res);
+});
 
 productRouter.post("/rate", productController.rateProduct);
 

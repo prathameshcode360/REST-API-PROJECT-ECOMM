@@ -1,8 +1,12 @@
-import ProductModel from "./product.model.js";
+import ProductRepo from "./product.repo.js";
 export default class ProductController {
-  getProducts(req, res) {
+  constructor() {
+    this.productRepo = new ProductRepo();
+  }
+  async getProducts(req, res) {
     try {
-      let products = ProductModel.getAll();
+      let products = await this.productRepo.getAll();
+
       return res.status(200).send({ msg: "products", products });
     } catch (err) {
       console.log(err);
@@ -11,11 +15,16 @@ export default class ProductController {
       });
     }
   }
-  addProduct(req, res) {
+  async addProduct(req, res) {
     try {
       const { name, price, category } = req.body;
       const image = req.file.filename;
-      const newProduct = ProductModel.add(name, price, image, category);
+      const newProduct = await this.productRepo.add(
+        name,
+        Number(price),
+        image,
+        category
+      );
       return res.status(201).send({
         msg: "new product added",
         newProduct: newProduct,
@@ -27,10 +36,10 @@ export default class ProductController {
       });
     }
   }
-  getOneProducts(req, res) {
+  async getOneProducts(req, res) {
     try {
-      const id = req.params.id;
-      let product = ProductModel.getOne(id);
+      const _id = req.params._id;
+      let product = await this.productRepo.getOne(_id);
       if (!product) {
         return res.status(404).send({ msg: "Product not found" });
       } else {
