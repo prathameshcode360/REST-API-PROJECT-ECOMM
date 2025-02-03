@@ -36,4 +36,31 @@ export default class ProductRepo {
       console.error("Database error in getOne function:", err);
     }
   }
+  async filter(minPrice, maxPrice, category) {
+    try {
+      const db = getDb();
+      const collection = db.collection(this.collection);
+
+      let filterExpression = {};
+
+      if (minPrice || maxPrice) {
+        filterExpression.price = {};
+        if (minPrice) {
+          filterExpression.price.$gte = parseFloat(minPrice);
+        }
+        if (maxPrice) {
+          filterExpression.price.$lte = parseFloat(maxPrice);
+        }
+      }
+
+      if (category) {
+        filterExpression.category = category;
+      }
+
+      const result = await collection.find(filterExpression).toArray();
+      return result;
+    } catch (err) {
+      console.error("Something went wrong in database filter function:", err);
+    }
+  }
 }

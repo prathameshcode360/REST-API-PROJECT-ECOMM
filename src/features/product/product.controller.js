@@ -1,3 +1,4 @@
+import ProductModel from "./product.model.js";
 import ProductRepo from "./product.repo.js";
 export default class ProductController {
   constructor() {
@@ -50,19 +51,17 @@ export default class ProductController {
       return res.status(500).send({ msg: "Internal server error" });
     }
   }
-  filterProducts(req, res) {
+  async filterProducts(req, res) {
     try {
       const minPrice = Number(req.query.minPrice);
       const maxPrice = Number(req.query.maxPrice); // ✅ Corrected this line
       const category = req.query.category;
 
-      console.log(minPrice);
-      console.log(maxPrice);
-      console.log(category);
-
-      let filteredProducts = ProductModel.filter(minPrice, maxPrice, category);
-
-      console.log(filteredProducts);
+      let filteredProducts = await this.productRepo.filter(
+        minPrice,
+        maxPrice,
+        category
+      );
 
       if (!filteredProducts.length) {
         // ✅ Checking array length

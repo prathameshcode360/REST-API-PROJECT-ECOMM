@@ -8,15 +8,6 @@ export default class ProductModel {
     this._id = _id;
   }
 
-  static filter(minPrice, maxPrice, category) {
-    return products.filter((p) => {
-      return (
-        (!minPrice || p.price >= minPrice) &&
-        (!maxPrice || p.price <= maxPrice) &&
-        (!category || p.category == category)
-      );
-    });
-  }
   static rate(userId, productId, rating) {
     // 1. Check if user is valid
     const user = UserModel.getAll().find((u) => u.id == userId);
