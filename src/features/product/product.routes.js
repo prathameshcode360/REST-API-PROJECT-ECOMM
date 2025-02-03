@@ -18,6 +18,8 @@ productRouter.get("/:_id", (req, res) => {
   productController.getOneProducts(req, res);
 });
 
-productRouter.post("/rate", productController.rateProduct);
+productRouter.post("/rate", (req, res) => {
+  productController.rateProduct(req, res);
+});
 
 export default productRouter;
