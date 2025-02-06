@@ -1,9 +1,9 @@
 export default class CartModel {
-  constructor(cartId, userId, productId, quantity) {
-    this.cartId = cartId;
+  constructor(userId, productId, quantity, _id) {
     this.userId = userId;
     this.productId = productId;
     this.quantity = quantity;
+    this._id = _id;
   }
   static add(userId, productId, quantity) {
     if (!cartItems[userId]) {
