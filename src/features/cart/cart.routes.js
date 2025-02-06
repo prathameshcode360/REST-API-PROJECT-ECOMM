@@ -7,8 +7,14 @@ const cartController = new CartController();
 cartRouter.post("/add", (req, res) => {
   cartController.addToCart(req, res);
 });
-cartRouter.get("/get", cartController.getCartItems);
-cartRouter.post("/update", cartController.updateCartItem);
-cartRouter.delete("/delete/:cartId", cartController.deleteItem);
+cartRouter.get("/get", (req, res) => {
+  cartController.getCartItems(req, res);
+});
+cartRouter.post("/update", (req, res) => {
+  cartController.updateCartItem(req, res);
+});
+cartRouter.delete("/delete/:productId", (req, res) => {
+  cartController.deleteItem(req, res);
+});
 
 export default cartRouter;

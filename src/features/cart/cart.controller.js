@@ -18,21 +18,21 @@ export default class CartController {
       return res.status(500).send("Internal server error");
     }
   }
-  getCartItems(req, res) {
+  async getCartItems(req, res) {
     try {
       const userId = req.userId;
-      let carItems = CartModel.getItems(userId);
+      let carItems = await this.cartRepo.getAll(userId);
       return res.status(200).send({ msg: "Your Cart", carItems });
     } catch (err) {
       console.error(err);
       return res.status(500).send("Internal server error");
     }
   }
-  updateCartItem(req, res) {
+  async updateCartItem(req, res) {
     try {
       const userId = req.userId;
-      const { cartId, quantity } = req.body;
-      const result = CartModel.update(userId, cartId, quantity);
+      const { productId, quantity } = req.body;
+      const result = await this.cartRepo.update(userId, productId, quantity);
       if (result) {
         return res.send(result);
       }
@@ -41,12 +41,11 @@ export default class CartController {
       return res.status(500).send({ msg: "Internal server error" });
     }
   }
-  deleteItem(req, res) {
+  async deleteItem(req, res) {
     try {
       const userId = req.userId;
-      const cartId = req.params.cartId;
-      console.log(cartId);
-      const result = CartModel.delete(userId, cartId);
+      const productId = req.params.productId;
+      const result = await this.cartRepo.delete(userId, productId);
       if (result) {
         return res.send(result);
       }
