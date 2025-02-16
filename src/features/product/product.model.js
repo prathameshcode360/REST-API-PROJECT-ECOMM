@@ -1,10 +1,11 @@
 import UserModel from "../user/user.model.js";
 export default class ProductModel {
-  constructor(name, price, image, category, _id) {
+  constructor(name, price, image, category, stocks, _id) {
     this.name = name;
     this.price = price;
     this.image = image;
     this.category = category;
+    this.stocks = stocks;
     this._id = _id;
   }
 

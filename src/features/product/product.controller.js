@@ -18,13 +18,14 @@ export default class ProductController {
   }
   async addProduct(req, res) {
     try {
-      const { name, price, category } = req.body;
+      const { name, price, category, stocks } = req.body;
       const image = req.file.filename;
       const newProduct = await this.productRepo.add(
         name,
         Number(price),
         image,
-        category
+        category,
+        Number(stocks)
       );
       return res.status(201).send({
         msg: "new product added",

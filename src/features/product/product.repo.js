@@ -8,11 +8,11 @@ export default class ProductRepo {
     this.userRepo = new UserRepo();
   }
 
-  async add(name, price, image, category) {
+  async add(name, price, image, category, stocks) {
     try {
       const db = getDb();
       const collection = db.collection(this.collection);
-      const newProduct = new ProductModel(name, price, image, category);
+      const newProduct = new ProductModel(name, price, image, category, stocks);
       await collection.insertOne(newProduct);
       return newProduct;
     } catch (err) {
