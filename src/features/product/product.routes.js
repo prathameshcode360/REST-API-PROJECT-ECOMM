@@ -1,6 +1,7 @@
 import express from "express";
 import ProductController from "./product.controller.js";
 import fileUpload from "../../middlewares/fileupload.middleware.js";
+import jwtAuth from "../../middlewares/jwtAuth.middleware.js";
 const productRouter = express.Router();
 const productController = new ProductController();
 
@@ -18,6 +19,8 @@ productRouter.get("/:_id", (req, res) => {
   productController.getOneProducts(req, res);
 });
 
-productRouter.post("/rate", productController.rateProduct);
+productRouter.post("/rate", jwtAuth, (req, res) => {
+  productController.rateProduct(req, res);
+});
 
 export default productRouter;

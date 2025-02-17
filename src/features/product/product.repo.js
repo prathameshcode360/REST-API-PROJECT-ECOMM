@@ -59,4 +59,49 @@ export default class ProductRepo {
       console.log("Error occures in databse filter function", err);
     }
   }
+  async rate(userId, productId, rating) {
+    try {
+      const db = getDb();
+      const collection = db.collection(this.collection);
+
+      // 1.check user is valid or not
+      const userCollection = db.collection("users");
+      const user = await userCollection.findOne({ _id: new ObjectId(userId) });
+      if (!user) {
+        return "user not found";
+      }
+
+      // 2.check product is valid or not
+      const product = await collection.findOne({
+        _id: new ObjectId(productId),
+      });
+      if (!product) {
+        return "product not found";
+      }
+      // 3.intializing the rating array if it is not present
+      if (!product.ratings) {
+        product.ratings = [];
+      }
+
+      const existingRatingIndex = product.ratings.findIndex(
+        (r) => r.userId.toString() == userId
+      );
+      if (existingRatingIndex !== -1) {
+        product.ratings[existingRatingIndex].rating = rating;
+      } else {
+        product.ratings.push({ userId: new ObjectId(userId), rating: rating });
+      }
+      await collection.updateOne(
+        {
+          _id: new ObjectId(productId),
+        },
+        {
+          $set: { ratings: product.ratings },
+        }
+      );
+      return "ratings updated successfully";
+    } catch (err) {
+      console.log("Error in database rate product function", err);
+    }
+  }
 }

@@ -40,7 +40,6 @@ export default class UserController {
         process.env.JWT_SECRET,
         { expiresIn: "1h" }
       );
-
       return res.status(200).send(token);
     } catch (err) {
       console.error("Sign-in error:", err);

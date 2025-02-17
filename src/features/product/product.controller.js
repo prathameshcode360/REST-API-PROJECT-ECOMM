@@ -83,10 +83,11 @@ export default class ProductController {
       });
     }
   }
-  rateProduct(req, res) {
+  async rateProduct(req, res) {
     try {
-      const { userId, productId, rating } = req.body;
-      const result = ProductModel.rate(userId, productId, rating);
+      const userId = req.userId;
+      const { productId, rating } = req.body;
+      const result = await this.productRepo.rate(userId, productId, rating);
 
       if (result) {
         return res.send(result);
