@@ -1,7 +1,7 @@
 import express from "express";
 import CartController from "./cart.controller.js";
-const cartRouter = express.Router();
 
+const cartRouter = express.Router();
 const cartController = new CartController();
 
 cartRouter.post("/add", (req, res) => {
@@ -10,6 +10,7 @@ cartRouter.post("/add", (req, res) => {
 cartRouter.get("/get", (req, res) => {
   cartController.getCartItems(req, res);
 });
+
 cartRouter.post("/update", (req, res) => {
   cartController.updateCartItem(req, res);
 });

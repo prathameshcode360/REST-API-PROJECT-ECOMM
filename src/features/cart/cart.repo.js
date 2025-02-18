@@ -1,51 +1,42 @@
+import { ObjectId } from "mongodb";
 import { getDb } from "../../config/mongodb.js";
-import { ObjectId } from "mongodb"; // ✅ ObjectId import karna zaroori hai
-
-export default class CartRepository {
+export default class CartRepo {
   constructor() {
     this.collection = "cartitems";
   }
-
   async add(userId, productId, quantity) {
     try {
       const db = getDb();
       const collection = db.collection(this.collection);
 
-      // ✅ userId ko ObjectId mein convert karna zaroori hai
-      const userObjectId = new ObjectId(userId);
-
-      const newItem = { productId: new ObjectId(productId), quantity };
-
-      // ✅ Update ya create cart document
+      const newItem = {
+        productId: new ObjectId(productId),
+        quantity: quantity,
+      };
       await collection.updateOne(
-        { userId: userObjectId }, // ObjectId format ka userId
-        { $push: { cart: newItem } }, // Cart array mein naye product ko push karna
-        { upsert: true } // Agar user ka cart exist nahi karta to naya bana do
+        { userId: new ObjectId(userId) },
+        {
+          $push: { cart: newItem },
+        },
+        {
+          upsert: true,
+        }
       );
-
       return newItem;
     } catch (err) {
-      console.log("Something went wrong in database add cart function", err);
+      console.log("Error in database cart add function", err);
     }
   }
-
   async getAll(userId) {
     try {
       const db = getDb();
       const collection = db.collection(this.collection);
-
-      // ✅ Use findOne() because only one cart exists per user
       const cart = await collection.findOne({ userId: new ObjectId(userId) });
-
-      return cart ? cart.cart : []; // ✅ If cart exists, return items; else, return empty array
+      return cart;
     } catch (err) {
-      console.log(
-        "Something went wrong in database get cart items function",
-        err
-      );
+      console.log("Error in database cart gett all function", err);
     }
   }
-
   async update(userId, productId, quantity) {
     try {
       const db = getDb();
@@ -60,7 +51,7 @@ export default class CartRepository {
 
       //2.check the product is available or not
       const productIndex = userCart.cart.findIndex(
-        (p) => p.productId == productId
+        (p) => p.productId.toString() === productId
       );
       if (productIndex === -1) {
         return { msg: "Product not found" };
@@ -81,7 +72,6 @@ export default class CartRepository {
       console.log("Something went wrong in update cart function", err);
     }
   }
-
   async delete(userId, productId) {
     try {
       const db = getDb();
