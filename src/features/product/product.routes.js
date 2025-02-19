@@ -7,6 +7,9 @@ const productController = new ProductController();
 productRouter.get("/average", (req, res) => {
   productController.averagePrice(req, res);
 });
+// productRouter.get("/average", (req, res) => {
+//   productController.averageRating(req, res);
+// });
 
 productRouter.get("/filter", (req, res) => {
   productController.filterProducts(req, res);

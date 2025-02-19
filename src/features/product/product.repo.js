@@ -124,8 +124,35 @@ export default class ProductRepo {
           {
             // stage 1- get average price per category
             $group: {
-              _id: "category",
+              _id: "$category",
               averagePrice: { $avg: "$price" },
+            },
+          },
+        ])
+        .toArray();
+    } catch (err) {
+      console.error(
+        "Something went wrong in database aggregation function:",
+        err
+      );
+    }
+  }
+  async averageRatings() {
+    try {
+      const db = getDb();
+      const collection = db.collection(this.collection);
+
+      return await collection
+        .aggregate([
+          {
+            // Step 1: Unwind the ratings array (each rating becomes a separate document)
+            $unwind: "$ratings",
+          },
+          {
+            // Step 2: Group by category and calculate the average rating
+            $group: {
+              _id: "$category",
+              averageRating: { $avg: "$ratings.rating" },
             },
           },
         ])
