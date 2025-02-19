@@ -23,7 +23,10 @@ export default class ProductRepo {
     try {
       const db = getDb();
       const collection = db.collection(this.collection);
-      return await collection.find().toArray();
+      return await collection
+        .find()
+        .project({ name: 1, price: 1, _id: 0, ratings: { $slice: -1 } })
+        .toArray();
     } catch (err) {
       console.error("Database error in getAll function:", err);
     }
