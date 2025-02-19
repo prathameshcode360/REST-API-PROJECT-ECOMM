@@ -92,4 +92,23 @@ export default class CartRepo {
       console.log("Something went wrong in delete cart function", err);
     }
   }
+  async deleteCart(userId) {
+    try {
+      const db = getDb();
+      const collection = db.collection(this.collection);
+
+      const result = await collection.deleteOne({
+        userId: new ObjectId(userId),
+      });
+
+      if (result.deletedCount > 0) {
+        // Use deletedCount instead of modifiedCount
+        return "User cart deleted successfully";
+      } else {
+        return "Cart not found or already deleted";
+      }
+    } catch (err) {
+      console.log("Something went wrong in delete cart function", err);
+    }
+  }
 }

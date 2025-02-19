@@ -53,4 +53,16 @@ export default class CartController {
       return res.status(500).send("Internal server error");
     }
   }
+  async deleteCart(req, res) {
+    try {
+      const userId = req.userId;
+      const result = await this.cartRepo.deleteCart(userId);
+      if (result) {
+        return res.status(200).send({ msg: result });
+      }
+    } catch (err) {
+      console.log(err);
+      return res.status(500).send("Internal server error");
+    }
+  }
 }

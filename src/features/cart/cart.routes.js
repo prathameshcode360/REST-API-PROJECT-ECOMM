@@ -18,4 +18,8 @@ cartRouter.delete("/delete/:productId", (req, res) => {
   cartController.deleteItem(req, res);
 });
 
+cartRouter.delete("/delete", (req, res) => {
+  cartController.deleteCart(req, res);
+});
+
 export default cartRouter;
