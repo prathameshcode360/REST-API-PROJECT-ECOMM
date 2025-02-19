@@ -7,6 +7,7 @@ export function connectToMongoDB() {
     .then((clientInstance) => {
       client = clientInstance;
       console.log("Mongo db connectd sucessfully");
+      createCounter(client.db());
     })
     .catch((err) => {
       console.error(err);
@@ -15,4 +16,13 @@ export function connectToMongoDB() {
 
 export function getDb() {
   return client.db();
+}
+
+async function createCounter(db) {
+  const existingCounter = await db
+    .collection("counters")
+    .findOne({ _id: "userId" });
+  if (!existingCounter) {
+    await db.collection("counters").insertOne({ _id: "userId", value: 0 });
+  }
 }
