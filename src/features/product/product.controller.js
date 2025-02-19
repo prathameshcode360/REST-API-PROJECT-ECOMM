@@ -91,4 +91,13 @@ export default class ProductController {
       return res.status(500).send({ msg: "Internal server error" });
     }
   }
+  async averagePrice(req, res) {
+    try {
+      const result = await this.productRepo.averagePrice();
+      return res.status(200).send(result);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send({ msg: "Internal server error" });
+    }
+  }
 }

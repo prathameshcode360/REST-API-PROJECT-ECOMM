@@ -115,4 +115,26 @@ export default class ProductRepo {
       console.error("Something went wrong in database rate function:", err);
     }
   }
+  async averagePrice() {
+    try {
+      const db = getDb();
+      const collection = db.collection(this.collection);
+      return await collection
+        .aggregate([
+          {
+            // stage 1- get average price per category
+            $group: {
+              _id: "category",
+              averagePrice: { $avg: "$price" },
+            },
+          },
+        ])
+        .toArray();
+    } catch (err) {
+      console.error(
+        "Something went wrong in database aggregation function:",
+        err
+      );
+    }
+  }
 }

@@ -4,6 +4,10 @@ import fileUpload from "../../middlewares/fileupload.middleware.js";
 const productRouter = express.Router();
 const productController = new ProductController();
 
+productRouter.get("/average", (req, res) => {
+  productController.averagePrice(req, res);
+});
+
 productRouter.get("/filter", (req, res) => {
   productController.filterProducts(req, res);
 });

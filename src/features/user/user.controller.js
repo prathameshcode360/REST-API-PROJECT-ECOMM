@@ -37,7 +37,7 @@ export default class UserController {
       // Generate JWT token
       const token = jwt.sign(
         { userId: user._id, email: user.email },
-        process.env.JWT_SECRET,
+        "fJpR6O1uWJscH2OGbVwsHKfM8gKLLnsJ",
         { expiresIn: "1h" }
       );
 
