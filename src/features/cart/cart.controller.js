@@ -17,16 +17,6 @@ export default class CartController {
       return res.status(500).send({ msg: "Internal server error" });
     }
   }
-  async getCartItems(req, res) {
-    try {
-      const userId = req.userId;
-      const cart = await this.cartRepo.getAll(userId);
-      return res.status(200).send({ cart: cart });
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send({ msg: "Internal server error" });
-    }
-  }
   async updateCartItem(req, res) {
     try {
       const userId = req.userId;
@@ -37,6 +27,16 @@ export default class CartController {
       }
     } catch (err) {
       console.error(err);
+      return res.status(500).send({ msg: "Internal server error" });
+    }
+  }
+  async getCartItems(req, res) {
+    try {
+      const userId = req.userId;
+      const cart = await this.cartRepo.getAll(userId);
+      return res.status(200).send({ cart: cart });
+    } catch (err) {
+      console.log(err);
       return res.status(500).send({ msg: "Internal server error" });
     }
   }

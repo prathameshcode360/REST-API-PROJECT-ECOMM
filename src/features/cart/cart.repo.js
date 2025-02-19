@@ -27,16 +27,6 @@ export default class CartRepo {
       console.log("Error in database cart add function", err);
     }
   }
-  async getAll(userId) {
-    try {
-      const db = getDb();
-      const collection = db.collection(this.collection);
-      const cart = await collection.findOne({ userId: new ObjectId(userId) });
-      return cart;
-    } catch (err) {
-      console.log("Error in database cart gett all function", err);
-    }
-  }
   async update(userId, productId, quantity) {
     try {
       const db = getDb();
@@ -70,6 +60,16 @@ export default class CartRepo {
       return { msg: "cart update sucessfully" };
     } catch (err) {
       console.log("Something went wrong in update cart function", err);
+    }
+  }
+  async getAll(userId) {
+    try {
+      const db = getDb();
+      const collection = db.collection(this.collection);
+      const cart = await collection.findOne({ userId: new ObjectId(userId) });
+      return cart;
+    } catch (err) {
+      console.log("Error in database cart gett all function", err);
     }
   }
   async delete(userId, productId) {
