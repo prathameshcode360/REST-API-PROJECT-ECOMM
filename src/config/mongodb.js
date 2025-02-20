@@ -17,12 +17,5 @@ export function getDb() {
   if (!client) {
     throw new Error("Database not connected!");
   }
-  return client.db();
-}
-
-export function getClient() {
-  if (!client) {
-    throw new Error("Database client not initialized!");
-  }
-  return client;
+  return client.db("ecomdb"); // Corrected: Database name should be a string
 }

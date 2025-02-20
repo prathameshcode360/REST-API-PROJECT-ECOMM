@@ -1,112 +1,106 @@
-import ProductRepo from "../product/product.repo.js";
-import CartRepository from "../cart/cart.repo.js";
-import { getDb, getClient } from "../../config/mongodb.js";
+import { getDb } from "../../config/mongodb.js";
 import { ObjectId } from "mongodb";
 
-export default class CartRepo {
+export default class OrderRepo {
   constructor() {
     this.collection = "orders";
-    this.cartRepo = new CartRepository();
-    this.productRepo = new ProductRepo();
   }
 
-  async placeOrder(userId) {
-    const db = getDb();
-    const ordersCollection = db.collection("orders");
-    const cartsCollection = db.collection(this.cartRepo.collection);
-    const productsCollection = db.collection(this.productRepo.collection);
-
-    const client = getClient(); // ✅ Fix: Get client instance
-    const session = client.startSession(); // ✅ Fix: Use client to start session
-
+  async placeOrder(userId, productId) {
     try {
-      session.startTransaction();
+      const db = getDb();
+      const collection = db.collection(this.collection);
 
-      // ✅ Step 1: Get cart items
-      const cartData = await cartsCollection
+      // 1. Getting cart items and calculating total amount
+      const result = await this.getTotalAmount(userId, productId);
+      if (!result.length) {
+        throw new Error("Cart item not found for this user and product");
+      }
+
+      // 2. Check if enough stock is available
+      const product = await db
+        .collection("products")
+        .findOne({ _id: new ObjectId(productId) });
+
+      if (!product || product.stocks < result[0].cart.quantity) {
+        throw new Error("Not enough stock available");
+      }
+
+      // 3. Creating new record for order
+      const newOrder = {
+        userId: new ObjectId(userId),
+        productId: new ObjectId(productId),
+        productInfo: {
+          name: result[0].productInfo.name,
+          price: result[0].productInfo.price,
+          category: result[0].productInfo.category,
+        },
+        quantity: result[0].cart.quantity,
+        totalAmount: result[0].totalAmount,
+        orderDate: new Date(),
+        status: "pending",
+      };
+
+      await collection.insertOne(newOrder);
+
+      // 4. Reduce the stock of the product
+      await db
+        .collection("products")
+        .updateOne(
+          { _id: new ObjectId(productId) },
+          { $inc: { stocks: -result[0].cart.quantity } }
+        );
+
+      // 5. Remove product from cart
+      await db
+        .collection("cartitems")
+        .updateOne(
+          { userId: new ObjectId(userId) },
+          { $pull: { cart: { productId: new ObjectId(productId) } } }
+        );
+      return newOrder;
+    } catch (err) {
+      throw new Error("Database error in placeOrder: " + err.message);
+    }
+  }
+
+  async getTotalAmount(userId, productId) {
+    try {
+      const db = getDb();
+      const result = await db
+        .collection("cartitems")
         .aggregate([
-          { $match: { userId: new ObjectId(userId) } },
+          {
+            $match: {
+              userId: new ObjectId(userId),
+              cart: {
+                $elemMatch: { productId: new ObjectId(productId) },
+              },
+            },
+          },
           { $unwind: "$cart" },
           {
             $lookup: {
               from: "products",
               localField: "cart.productId",
               foreignField: "_id",
-              as: "productDetails",
+              as: "productInfo",
             },
           },
-          { $unwind: "$productDetails" },
+          { $unwind: "$productInfo" },
           {
-            $project: {
-              productId: "$productDetails._id",
-              name: "$productDetails.name",
-              price: "$productDetails.price",
-              quantity: "$cart.quantity",
-              totalPrice: {
-                $multiply: ["$cart.quantity", "$productDetails.price"],
+            $addFields: {
+              totalAmount: {
+                $multiply: ["$productInfo.price", "$cart.quantity"],
               },
             },
           },
         ])
         .toArray();
 
-      if (cartData.length === 0) {
-        throw new Error("Cart is empty. Cannot place order.");
-      }
-
-      // ✅ Step 2: Calculate total amount
-      const totalAmount = cartData.reduce(
-        (sum, item) => sum + item.totalPrice,
-        0
-      );
-
-      // ✅ Step 3: Create order document
-      const order = {
-        userId: new ObjectId(userId),
-        products: cartData.map((item) => ({
-          productId: item.productId,
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-        })),
-        totalAmount,
-        createdAt: new Date(),
-      };
-
-      await ordersCollection.insertOne(order, { session });
-
-      // ✅ Step 4: Clear cart
-      await cartsCollection.updateOne(
-        { userId: new ObjectId(userId) },
-        { $set: { cart: [] } },
-        { session }
-      );
-
-      // ✅ Step 5: Reduce stocks
-      for (let item of cartData) {
-        const { productId, quantity } = item;
-        const product = await productsCollection.findOne({ _id: productId });
-
-        if (!product || product.stocks < quantity) {
-          throw new Error(`Not enough stock for ${item.name}`);
-        }
-
-        await productsCollection.updateOne(
-          { _id: productId },
-          { $inc: { stocks: -quantity } },
-          { session }
-        );
-      }
-
-      // ✅ Commit transaction
-      await session.commitTransaction();
-      session.endSession();
-
-      return { message: "Order placed successfully!", order };
-    } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
-      throw new Error(`Order placement failed: ${error.message}`);
+      return result;
+    } catch (err) {
+      throw new Error("Error in getTotalAmount: " + err.message);
     }
   }
 }
