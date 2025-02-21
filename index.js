@@ -4,6 +4,7 @@ import productRouter from "./src/features/product/product.routes.js";
 import userRouter from "./src/features/user/user.routes.js";
 import jwtAuth from "./src/middlewares/jwtAuth.middleware.js";
 import cartRouter from "./src/features/cart/cart.routes.js";
+import connectToDatabase from "./src/config/mongoose.js";
 
 const app = express();
 
@@ -19,4 +20,5 @@ app.get("/", (req, res) => {
 
 app.listen(4100, () => {
   console.log("server is listening on port 4100");
+  connectToDatabase();
 });
