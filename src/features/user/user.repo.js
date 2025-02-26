@@ -10,6 +10,9 @@ export default class UserRepo {
       await newUser.save();
       return newUser;
     } catch (error) {
+      if (error instanceof mongoose.Error.ValidationError) {
+        throw error;
+      }
       console.log("Something went wrong in database register function", error);
     }
   }
@@ -44,7 +47,9 @@ export default class UserRepo {
   }
   async resetPassword(userId, newPassword) {
     try {
-      const user = await UserModel.findOne({ _id: new ObjectId(userId) });
+      //   await UserModel.findByIdAndUpdate(userId, { password: newPassword });
+      // 2.second approach
+      const user = await UserModel.findById({ _id: userId });
       if (user) {
         user.password = newPassword;
         user.save();

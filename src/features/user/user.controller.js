@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import UserRepo from "./user.repo.js";
 import bcrypt, { hash } from "bcrypt";
+import mongoose from "mongoose";
 export default class UserController {
   constructor() {
     this.userRepo = new UserRepo();
@@ -19,6 +20,9 @@ export default class UserController {
         .status(201)
         .send({ msg: "User added successfully", newUser: newUser });
     } catch (err) {
+      if (err instanceof mongoose.Error.ValidationError) {
+        return res.status(400).send({ msg: err.message, error: err.errors });
+      }
       console.error(err);
       return res.status(500).send({ msg: "Internal server error" });
     }
