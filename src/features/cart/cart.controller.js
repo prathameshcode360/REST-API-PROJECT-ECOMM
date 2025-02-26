@@ -1,11 +1,14 @@
-import CartModel from "./cart.model.js";
+import CartRepo from "./cart.repo.js";
+
 export default class CartController {
-  addToCart(req, res) {
+  constructor() {
+    this.cartRepo = new CartRepo();
+  }
+  async addToCart(req, res) {
     try {
       const userId = req.userId;
       const { productId, quantity } = req.body;
-      const newItem = CartModel.add(userId, productId, quantity);
-
+      const newItem = await this.cartRepo.add(userId, productId, quantity);
       return res
         .status(201)
         .send({ msg: "product added to cart", cartItem: newItem });
