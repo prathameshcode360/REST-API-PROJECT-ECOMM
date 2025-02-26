@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import UserRepo from "./user.repo.js";
-import bcrypt from "bcrypt";
+import bcrypt, { hash } from "bcrypt";
 export default class UserController {
   constructor() {
     this.userRepo = new UserRepo();
@@ -40,7 +40,7 @@ export default class UserController {
       }
 
       const token = jwt.sign(
-        { userId: user.id, email: user.email },
+        { userId: user._id, email: user.email },
         "RyHNTbfn8j7InkOJartrslNgkGdCxPWu",
         { expiresIn: "1h" }
       );
@@ -70,6 +70,18 @@ export default class UserController {
       } else {
         return res.status(200).send({ msg: "user", user: user });
       }
+    } catch (err) {
+      console.log(err);
+      return res.status(500).send({ msg: "Internal server error" });
+    }
+  }
+  async resetPassword(req, res) {
+    try {
+      const { newPassword } = req.body;
+      const userId = req.userId;
+      const hashPassword = await bcrypt.hash(newPassword, 12);
+      await this.userRepo.resetPassword(userId, hashPassword);
+      return res.status(200).send({ msg: "Password updated sucessfully" });
     } catch (err) {
       console.log(err);
       return res.status(500).send({ msg: "Internal server error" });

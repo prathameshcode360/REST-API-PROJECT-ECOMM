@@ -42,4 +42,20 @@ export default class UserRepo {
       );
     }
   }
+  async resetPassword(userId, newPassword) {
+    try {
+      const user = await UserModel.findOne({ _id: new ObjectId(userId) });
+      if (user) {
+        user.password = newPassword;
+        user.save();
+      } else {
+        throw new Error("User not found");
+      }
+    } catch (error) {
+      console.log(
+        "Something went wrong in database resetPassword function",
+        error
+      );
+    }
+  }
 }
